@@ -61,6 +61,7 @@ var indexCmd = &cobra.Command{
 				ScanCount: scanCount,
 				Pattern:   pattern,
 				Throttle:  throttleNs,
+				IsCluster: isCluster,
 			},
 			resultTrie,
 		)
