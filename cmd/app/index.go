@@ -25,7 +25,8 @@ var indexCmd = &cobra.Command{
 		rsvc := adapter.NewRedisService(consoleLogger)
 		if isCluster {
 			client := redis.NewClusterClient(&redis.ClusterOptions{
-				Addrs: []string{args[0]},
+				Addrs:    []string{args[0]},
+				Password: password,
 			})
 
 			err := client.Ping(context.Background())
@@ -36,7 +37,8 @@ var indexCmd = &cobra.Command{
 			rsvc.SetClusterClient(*client)
 		} else {
 			client := redis.NewClient(&redis.Options{
-				Addr: args[0],
+				Addr:     args[0],
+				Password: password,
 			})
 
 			err := client.Ping(context.Background())
@@ -83,6 +85,7 @@ var indexCmd = &cobra.Command{
 func init() {
 	RootCmd.AddCommand(indexCmd)
 	indexCmd.Flags().StringVarP(&logLevel, "logLevel", "l", "info", "Level of logs to be displayed")
+	indexCmd.Flags().StringVarP(&password, "password", "a", "", "Password for redis instance")
 	indexCmd.Flags().StringVarP(&separators, "separators", "s", ":", "Symbols that logically separate levels of the key")
 	indexCmd.Flags().IntVarP(&maxChildren, "maxChildren", "m", 10, "Maximum children node can have before start aggregating")
 	indexCmd.Flags().StringVarP(&pattern, "pattern", "k", "*", "Glob pattern limiting the keys to be aggregated")
