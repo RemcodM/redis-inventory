@@ -29,9 +29,9 @@ var indexCmd = &cobra.Command{
 				Password: password,
 			})
 
-			err := client.Ping(context.Background())
+			_, err := client.Ping(context.Background()).Result()
 			if err != nil {
-				consoleLogger.Fatal().Err(err.Err()).Msg("Can't create redis cluster client")
+				consoleLogger.Fatal().Err(err).Msg("Can't create redis cluster client")
 			}
 
 			rsvc.SetClusterClient(*client)
@@ -41,9 +41,9 @@ var indexCmd = &cobra.Command{
 				Password: password,
 			})
 
-			err := client.Ping(context.Background())
+			_, err := client.Ping(context.Background()).Result()
 			if err != nil {
-				consoleLogger.Fatal().Err(err.Err()).Msg("Can't create redis client")
+				consoleLogger.Fatal().Err(err).Msg("Can't create redis client")
 			}
 
 			rsvc.SetClient(*client)
