@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -73,6 +74,13 @@ func (s RedisService) ScanAllShards(ctx context.Context, options ScanOptions, re
 	shardListChan := make(chan ShardInit)
 
 	go func() {
+		totalShards, err := s.GetTotalShards(ctx)
+		if err != nil {
+			s.logger.Error().Err(err).Msg("Error getting total shards")
+			return
+		}
+
+		var totalCompleted atomic.Int64
 		s.clusterClient.ForEachMaster(ctx, func(ctx context.Context, master *redis.Client) error {
 			totalKeys, err := master.DBSize(ctx).Result()
 			if err != nil {
@@ -92,6 +100,12 @@ func (s RedisService) ScanAllShards(ctx context.Context, options ScanOptions, re
 				if options.Throttle > 0 {
 					time.Sleep(time.Nanosecond * time.Duration(options.Throttle))
 				}
+			}
+
+			totalCompleted.Add(1)
+			if totalCompleted.Load() == totalShards {
+				close(shardListChan)
+				close(resultChan)
 			}
 
 			return nil
