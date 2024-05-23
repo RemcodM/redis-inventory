@@ -67,6 +67,7 @@ func (s RedisService) ScanKeys(ctx context.Context, options ScanOptions, resultC
 				time.Sleep(time.Nanosecond * time.Duration(options.Throttle))
 			}
 		}
+		close(resultChan)
 	}()
 }
 
@@ -153,7 +154,7 @@ func (s RedisService) GetMemoryUsage(ctx context.Context, key string) (int64, er
 
 func (s RedisService) GetTotalShards(ctx context.Context) (int64, error) {
 	if s.isCluster {
-		nodes, err := s.clusterClient.ClusterShards(ctx).Result()
+		nodes, err := s.clusterClient.ClusterSlots(ctx).Result()
 		if err != nil {
 			return 0, err
 		}
