@@ -2,6 +2,7 @@ package adapter
 
 import (
 	"context"
+	"fmt"
 	"sync/atomic"
 	"time"
 
@@ -94,6 +95,7 @@ func (s RedisService) ScanAllShards(ctx context.Context, options ScanOptions, re
 				key := scanIter.Val()
 				memoryUsage, err := s.GetMemoryUsage(ctx, key)
 				if err != nil {
+					fmt.Println(fmt.Errorf("error getting memory usage: %v for key %s", err, key))
 					panic(err)
 				}
 
