@@ -95,6 +95,9 @@ func (s RedisService) ScanAllShards(ctx context.Context, options ScanOptions, re
 				key := scanIter.Val()
 				memoryUsage, err := s.GetMemoryUsage(ctx, key)
 				if err != nil {
+					if err == redis.Nil {
+						continue
+					}
 					fmt.Println(fmt.Errorf("error getting memory usage: %v for key %s", err, key))
 					panic(err)
 				}
