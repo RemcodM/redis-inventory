@@ -51,6 +51,8 @@ func (s *RedisScanner) ScanCluster(options adapter.ScanOptions, result *trie.Tri
 		return
 	}
 
+	s.logger.Info().Msgf("Total shards found: %d", totalShards)
+
 	shardInitChan := s.redisService.ScanAllShards(context.Background(), options, scanUpdateChan)
 	currentShardNum := 0
 

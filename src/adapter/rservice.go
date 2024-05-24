@@ -84,6 +84,7 @@ func (s RedisService) ScanAllShards(ctx context.Context, options ScanOptions, re
 
 		var totalCompleted atomic.Int64
 		s.clusterClient.ForEachMaster(ctx, func(ctx context.Context, master *redis.Client) error {
+			s.logger.Info().Msgf("Scanning shard %s", master.Options().Addr)
 			totalKeys, err := master.DBSize(ctx).Result()
 			if err != nil {
 				panic(err)

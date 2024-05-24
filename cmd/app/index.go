@@ -34,6 +34,8 @@ var indexCmd = &cobra.Command{
 				consoleLogger.Fatal().Err(err).Msg("Can't create redis cluster client")
 			}
 
+			consoleLogger.Info().Msg("Connected to cluster")
+
 			rsvc.SetClusterClient(*client)
 		} else {
 			client := redis.NewClient(&redis.Options{
@@ -45,6 +47,8 @@ var indexCmd = &cobra.Command{
 			if err != nil {
 				consoleLogger.Fatal().Err(err).Msg("Can't create redis client")
 			}
+
+			consoleLogger.Info().Msg("Connected to node")
 
 			rsvc.SetClient(*client)
 		}
