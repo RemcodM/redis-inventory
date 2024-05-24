@@ -160,11 +160,21 @@ func (s RedisService) GetMemoryUsage(ctx context.Context, key string) (int64, er
 
 func (s RedisService) GetTotalShards(ctx context.Context) (int64, error) {
 	if s.isCluster {
-		nodes, err := s.clusterClient.ClusterSlots(ctx).Result()
+		slots, err := s.clusterClient.ClusterSlots(ctx).Result()
+		masterNodes := make(map[string]bool)
+
+		// Iterate over the slots to extract master nodes
+		for _, slot := range slots {
+			if len(slot.Nodes) > 0 {
+				masterNode := slot.Nodes[0]
+				masterNodes[masterNode.Addr] = true
+			}
+		}
+
 		if err != nil {
 			return 0, err
 		}
-		return int64(len(nodes)), nil
+		return int64(len(masterNodes)), nil
 	}
 
 	return 1, nil
