@@ -3,6 +3,7 @@ package app
 import (
 	"context"
 	"os"
+	"strings"
 
 	"github.com/Perseus/redis-inventory/src/adapter"
 	"github.com/Perseus/redis-inventory/src/logger"
@@ -35,6 +36,20 @@ var scanCmd = &cobra.Command{
 			}
 
 			rsvc.SetClusterClient(*client)
+		} else if strings.HasPrefix(args[0], "redis://") || strings.HasPrefix(args[0], "rediss://") {
+			opts, err := redis.ParseURL(args[0])
+			if err != nil {
+				consoleLogger.Fatal().Err(err).Msg("Can't parse Redis URL")
+			}
+
+			client := redis.NewClient(opts)
+
+			_, err = client.Ping(context.Background()).Result()
+			if err != nil {
+				consoleLogger.Fatal().Err(err).Msg("Can't create redis client")
+			}
+
+			rsvc.SetClient(*client)
 		} else {
 			client := redis.NewClient(&redis.Options{
 				Addr:     args[0],

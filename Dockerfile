@@ -1,4 +1,4 @@
-FROM golang:1.17.7-alpine as build
+FROM golang:1.22.5-alpine as build
 
 WORKDIR /go/src/
 
@@ -11,7 +11,7 @@ RUN go build -o /go/bin/redis-inventory
 
 ENTRYPOINT ["/go/bin/redis-inventory"]
 
-FROM alpine:3.15.1 AS dist
+FROM alpine:3.20.1 AS dist
 
 WORKDIR /go/bin/
 
